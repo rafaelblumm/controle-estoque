@@ -66,10 +66,11 @@ public class Produto {
      * @return (String) Dados do produto em CSV.
      */
     public String toCsv() {
-        return codigo + Estoque.SEPARADOR_CSV +
-                nome + Estoque.SEPARADOR_CSV +
-                quantidade + Estoque.SEPARADOR_CSV +
-                quantidadeMinima + Estoque.SEPARADOR_CSV;
+        String separador = ";";
+        return codigo + separador +
+                nome + separador +
+                quantidade + separador +
+                quantidadeMinima + separador;
     }
 
     @Override
