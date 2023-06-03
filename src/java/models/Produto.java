@@ -70,7 +70,7 @@ public class Produto {
         return codigo + separador +
                 nome + separador +
                 quantidade + separador +
-                quantidadeMinima + separador;
+                quantidadeMinima;
     }
 
     @Override
