@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -84,13 +82,6 @@ public class CSVHandlerTest {
         String csv = csvHandler.montaCsv();
 
         assertNull(csv);
-    }
-
-    private void createTestCsvFile(String filename) throws IOException {
-        FileWriter writer = new FileWriter(filename);
-        writer.write("123;Produto 1;10;5;\n");
-        writer.write("456;Produto 2;20;8;\n");
-        writer.close();
     }
 
     private void deleteTestCsvFile(String filename) {
