@@ -1,13 +1,12 @@
 package models;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Estoque {
-    private Map<String,Produto> produtos;
+    private final Map<String,Produto> produtos;
+
     public Estoque() {
         this.produtos = new HashMap<>();
     }
