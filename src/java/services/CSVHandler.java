@@ -37,6 +37,29 @@ public class CSVHandler {
             return false;
         }
     }
+    /**
+     * Sobrecarga do método anterior.
+     * @param nomeArquivo (String) Nome do arquivo para registrar.
+     * @return (boolean) Sucesso da operação.
+     */
+    public boolean leRegistroCsv(String nomeArquivo) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(nomeArquivo + ".csv", StandardCharsets.UTF_8))) {
+            String linha;
+            String[] dados;
+            Produto produto;
+
+            while ((linha = reader.readLine()) != null) {
+                dados = linha.split(SEPARADOR_CSV);
+                produto = new Produto(dados[0], dados[1], Integer.parseInt(dados[2]), Integer.parseInt(dados[3]));
+                estoque.getProdutos().put(produto.getCodigo(), produto);
+            }
+
+            reader.close();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 
     /**
      * Grava itens do estoque em um arquivo CSV externo.
@@ -48,6 +71,25 @@ public class CSVHandler {
             return false;
 
         try (FileWriter writer = new FileWriter(NOME_REGISTRO + ".csv", StandardCharsets.UTF_8)) {
+            writer.write(csv);
+            writer.close();
+
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+    /**
+     * Sobrecarga do método anterior.
+     * @param nomeArquivo (String) Nome do arquivo para registrar.
+     * @return (boolean) Sucesso da operação.
+     */
+    public boolean gravaRegistroCsv(String nomeArquivo) {
+        String csv = montaCsv();
+        if (csv == null)
+            return false;
+
+        try (FileWriter writer = new FileWriter(nomeArquivo + ".csv", StandardCharsets.UTF_8)) {
             writer.write(csv);
             writer.close();
 
@@ -70,14 +112,5 @@ public class CSVHandler {
             csv.append(estoque.getProdutos().get(key).toCsv()).append("\n");
 
         return csv.toString();
-    }
-
-    /**
-     * Testa se arquivo do registro de produtos do estoque existe.
-     * @return (boolean)
-     */
-    private boolean testaSeArquivoExiste(){
-        File csv = new File(NOME_REGISTRO + ".csv");
-        return (csv.exists() && !csv.isDirectory());
     }
 }
