@@ -5,12 +5,15 @@ import models.Produto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CSVHandlerTest {
-    private static final String TEST_CSV_FILENAME = "test_registro.csv";
+    private static final String TEST_CSV_FILENAME = "test_registro";
+    private static final String dirResources = System.getProperty("user.dir") + "\\tests\\resources\\";
 
     private Estoque estoque;
     private CSVHandler csvHandler;
@@ -18,48 +21,46 @@ public class CSVHandlerTest {
     @BeforeEach
     public void setUp() {
         estoque = new Estoque();
-        csvHandler = new CSVHandler(estoque);
+        csvHandler = new CSVHandler(dirResources, estoque);
     }
 
     @Test
-    public void leRegistroCsv_Invalido() throws IOException {
-        boolean result = csvHandler.leRegistroCsv("INVALIDO.CSV");
+    public void leRegistroCsv_Invalido() {
+        boolean result = csvHandler.leRegistro("INVALIDO");
 
         assertFalse(result);
         assertTrue(estoque.getProdutos().isEmpty());
     }
 
     @Test
-    public void leRegistroCsv_Valido() throws IOException {
-        createTestCsvFile(TEST_CSV_FILENAME);
-
-        boolean result = csvHandler.leRegistroCsv(TEST_CSV_FILENAME);
+    public void leRegistroCsv_Valido() {
+        Produto p1 = new Produto("123", "Produto 1", 10, 5);
+        Produto p2 = new Produto("456", "Produto 2", 20, 8);
+        boolean result = csvHandler.leRegistro(TEST_CSV_FILENAME);
 
         assertTrue(result);
         assertFalse(estoque.getProdutos().isEmpty());
-
-        deleteTestCsvFile(TEST_CSV_FILENAME);
+        assertEquals(p1, estoque.getProdutos().get("123"));
+        assertEquals(p2, estoque.getProdutos().get("456"));
     }
 
     @Test
-    public void gravaRegistroCsv_Valido() throws IOException {
+    public void gravaRegistroCsv_Valido() {
         Produto produto1 = new Produto("123", "Produto 1", 10, 5);
         Produto produto2 = new Produto("456", "Produto 2", 20, 8);
         estoque.insereProduto(produto1);
         estoque.insereProduto(produto2);
 
-        createTestCsvFile(TEST_CSV_FILENAME);
-
-        boolean result = csvHandler.gravaRegistroCsv(TEST_CSV_FILENAME);
+        String nomeArquivo = TEST_CSV_FILENAME + "_temp";
+        boolean result = csvHandler.gravaRegistro(nomeArquivo);
 
         assertTrue(result);
-        deleteTestCsvFile(TEST_CSV_FILENAME);
-
+        deleteTestCsvFile(nomeArquivo);
     }
 
     @Test
     public void gravaRegistroCsv_Invalido() {
-        boolean result = csvHandler.gravaRegistroCsv(TEST_CSV_FILENAME);
+        boolean result = csvHandler.gravaRegistro(TEST_CSV_FILENAME);
 
         assertFalse(result);
     }
@@ -74,8 +75,8 @@ public class CSVHandlerTest {
         String csv = csvHandler.montaCsv();
 
         assertNotNull(csv);
-        assertTrue(csv.contains("123;Produto 1;10;5;"));
-        assertTrue(csv.contains("456;Produto 2;20;8;"));
+        assertTrue(csv.contains("123;Produto 1;10;5"));
+        assertTrue(csv.contains("456;Produto 2;20;8"));
     }
 
     @Test
@@ -93,7 +94,8 @@ public class CSVHandlerTest {
     }
 
     private void deleteTestCsvFile(String filename) {
-        File file = new File(filename);
+        String path = dirResources + filename + ".csv";
+        File file = new File(path);
         file.delete();
     }
 }

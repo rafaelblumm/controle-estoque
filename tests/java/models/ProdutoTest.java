@@ -21,7 +21,7 @@ public class ProdutoTest {
 
     @Test
     public void formataDadosParaCsv() {
-        String esperado = "0001;Teclado mecanico;13;30;";
+        String esperado = "0001;Teclado mecanico;13;30";
         assertEquals(esperado, p.toCsv());
     }
 }

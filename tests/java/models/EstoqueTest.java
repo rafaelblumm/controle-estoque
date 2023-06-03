@@ -10,7 +10,7 @@ public class EstoqueTest {
     private Produto p;
 
     @BeforeEach
-    public void inicializa() {
+    public void setUp() {
         estoque = new Estoque();
         p = new Produto("0001", "Cuia de chimarrao", 120, 30);
     }
