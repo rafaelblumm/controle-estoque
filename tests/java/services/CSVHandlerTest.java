@@ -19,14 +19,13 @@ public class CSVHandlerTest {
     @BeforeEach
     public void setUp() {
         estoque = new Estoque();
-        csvHandler = new CSVHandler(dirResources, estoque);
+        csvHandler = new CSVHandler(dirResources);
     }
 
     @Test
     public void leRegistroCsv_Invalido() {
-        boolean result = csvHandler.leRegistro("INVALIDO");
+        estoque = new Estoque(csvHandler.leRegistro("INVALIDO"));
 
-        assertFalse(result);
         assertTrue(estoque.getProdutos().isEmpty());
     }
 
@@ -34,9 +33,8 @@ public class CSVHandlerTest {
     public void leRegistroCsv_Valido() {
         Produto p1 = new Produto("123", "Produto 1", 10, 5);
         Produto p2 = new Produto("456", "Produto 2", 20, 8);
-        boolean result = csvHandler.leRegistro(TEST_CSV_FILENAME);
+        estoque = new Estoque(csvHandler.leRegistro(TEST_CSV_FILENAME));
 
-        assertTrue(result);
         assertFalse(estoque.getProdutos().isEmpty());
         assertEquals(p1, estoque.getProdutos().get("123"));
         assertEquals(p2, estoque.getProdutos().get("456"));
@@ -50,7 +48,7 @@ public class CSVHandlerTest {
         estoque.insereProduto(produto2);
 
         String nomeArquivo = TEST_CSV_FILENAME + "_temp";
-        boolean result = csvHandler.gravaRegistro(nomeArquivo);
+        boolean result = csvHandler.gravaRegistro(estoque, nomeArquivo);
 
         assertTrue(result);
         deleteTestCsvFile(nomeArquivo);
@@ -58,7 +56,7 @@ public class CSVHandlerTest {
 
     @Test
     public void gravaRegistroCsv_Invalido() {
-        boolean result = csvHandler.gravaRegistro(TEST_CSV_FILENAME);
+        boolean result = csvHandler.gravaRegistro(estoque, TEST_CSV_FILENAME);
 
         assertFalse(result);
     }
@@ -70,7 +68,7 @@ public class CSVHandlerTest {
         estoque.insereProduto(produto1);
         estoque.insereProduto(produto2);
 
-        String csv = csvHandler.montaCsv();
+        String csv = csvHandler.montaCsv(estoque.getProdutos());
 
         assertNotNull(csv);
         assertTrue(csv.contains("123;Produto 1;10;5"));
@@ -79,7 +77,7 @@ public class CSVHandlerTest {
 
     @Test
     public void montaCsv_Invalido() {
-        String csv = csvHandler.montaCsv();
+        String csv = csvHandler.montaCsv(estoque.getProdutos());
 
         assertNull(csv);
     }

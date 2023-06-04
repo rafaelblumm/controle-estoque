@@ -21,16 +21,15 @@ public class EstoqueUI {
     private static boolean estoqueFoiModificado;
 
     public static void iniciar() {
-        estoque = new Estoque();
-        csvHandler = new CSVHandler(estoque);
+        csvHandler = new CSVHandler();
         scanner = new Scanner(System.in);
         estoqueFoiModificado = false;
+        estoque = new Estoque(csvHandler.leRegistro());
 
-        // Carregar os dados do estoque a partir do arquivo CSV
-        if (csvHandler.leRegistro())
-            System.out.println("Dados do estoque foram carregados do arquivo CSV.");
-        else
+        if (estoque.getProdutos().isEmpty())
             System.out.println("Não foi possível carregar os dados do estoque do arquivo CSV.");
+        else
+            System.out.println("Dados do estoque foram carregados do arquivo CSV.");
 
         int opcao;
         do {
@@ -202,7 +201,7 @@ public class EstoqueUI {
     private static void sair() {
         // Gravar os dados do estoque no arquivo CSV
         if (estoqueFoiModificado)
-            System.out.println(csvHandler.gravaRegistro() ? "Dados do estoque foram salvos no arquivo CSV." :
+            System.out.println(csvHandler.gravaRegistro(estoque) ? "Dados do estoque foram salvos no arquivo CSV." :
                     "Não foi possível salvar os dados do estoque no arquivo CSV.");
 
         System.out.println("Encerrando o programa. Até logo!");

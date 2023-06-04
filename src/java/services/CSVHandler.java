@@ -2,65 +2,69 @@ package services;
 
 import models.*;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CSVHandler {
     private static final String NOME_REGISTRO = "Registro-Produtos-Estoque";
     private static final String SEPARADOR_CSV = ";";
     private final String dirResources;
-    private Estoque estoque;
 
-    public CSVHandler(Estoque estoque) {
-        this.estoque = estoque;
+    public CSVHandler() {
         this.dirResources = System.getProperty("user.dir") + "\\src\\resources\\";
     }
 
-    public CSVHandler(String dirResources, Estoque estoque) {
+    public CSVHandler(String dirResources) {
         this.dirResources = dirResources;
-        this.estoque = estoque;
     }
 
     /**
      * Lê registro de produtos de arquivo CSV.
      * @param nomeArquivo (String) Nome do arquivo a ser lido.
-     * @return (boolean) Sucesso da operação.
+     * @return (HashMap<String, Produto>) Produtos registrados.
      */
-    public boolean leRegistro(String nomeArquivo) {
+    public Map<String, Produto> leRegistro(String nomeArquivo) {
         String path = dirResources + nomeArquivo + ".csv";
         try (BufferedReader reader = new BufferedReader(new FileReader(path, StandardCharsets.UTF_8))) {
             String linha;
             String[] dados;
             Produto produto;
+            Map<String, Produto> estoque = new HashMap<>();
 
             while ((linha = reader.readLine()) != null) {
                 dados = linha.split(SEPARADOR_CSV);
                 produto = new Produto(dados[0], dados[1], Integer.parseInt(dados[2]), Integer.parseInt(dados[3]));
-                estoque.getProdutos().put(produto.getCodigo(), produto);
+                estoque.put(produto.getCodigo(), produto);
             }
 
             reader.close();
-            return true;
+            return estoque.isEmpty() ? null : estoque;
         } catch (IOException e) {
-            return false;
+            return null;
         }
     }
 
     /**
      * Lê registro de produtos de arquivo CSV com nome padrão definido.
-     * @return (boolean) Sucesso da operação.
+     * @return (Map<String, Produto>) Produtos registrados.
      */
-    public boolean leRegistro() {
+    public Map<String, Produto> leRegistro() {
         return leRegistro(NOME_REGISTRO);
     }
 
     /**
      * Grava itens do estoque em um arquivo CSV externo.
+     * @param estoque (Estoque)
      * @param nomeArquivo (String) Nome do arquivo a ser registrado.
      * @return (boolean) Sucesso da operação.
      */
-    public boolean gravaRegistro(String nomeArquivo) {
-        String csv = montaCsv();
+    public boolean gravaRegistro(Estoque estoque, String nomeArquivo) {
+        String csv = montaCsv(estoque.getProdutos());
         if (csv == null)
             return false;
 
@@ -77,23 +81,25 @@ public class CSVHandler {
 
     /**
      * Grava itens do estoque em um arquivo CSV externo com nome padrão definido.
+     * @param estoque (Estoque)
      * @return (boolean) Sucesso da operação.
      */
-    public boolean gravaRegistro() {
-        return gravaRegistro(NOME_REGISTRO);
+    public boolean gravaRegistro(Estoque estoque) {
+        return gravaRegistro(estoque, NOME_REGISTRO);
     }
 
     /**
      * Monta arquivo CSV com registro de produtos do estoque.
+     * @param produtos (Map<String, Produto>)
      * @return (String) Dados do arquivo.
      */
-    public String montaCsv() {
-        if (estoque.getProdutos().isEmpty())
+    public String montaCsv(Map<String, Produto> produtos) {
+        if (produtos.isEmpty())
             return null;
 
         StringBuilder csv = new StringBuilder();
-        for (String key : estoque.getProdutos().keySet())
-            csv.append(estoque.getProdutos().get(key).toCsv()).append("\n");
+        for (String key : produtos.keySet())
+            csv.append(produtos.get(key).toCsv()).append("\n");
 
         return csv.toString();
     }

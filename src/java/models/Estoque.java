@@ -11,6 +11,10 @@ public class Estoque {
         this.produtos = new HashMap<>();
     }
 
+    public Estoque(Map<String, Produto> produtos) {
+        this.produtos = produtos != null ? produtos : new HashMap<>();
+    }
+
     public Map<String, Produto> getProdutos() {
         return produtos;
     }
