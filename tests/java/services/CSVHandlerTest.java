@@ -2,19 +2,31 @@ package services;
 
 import models.Estoque;
 import models.Produto;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CSVHandlerTest {
     private static final String TEST_CSV_FILENAME = "test_registro";
     private static final String dirResources = System.getProperty("user.dir") + "\\tests\\resources\\";
-
+    private static final String TEST_PATH = dirResources + TEST_CSV_FILENAME + ".csv";
     private Estoque estoque;
     private CSVHandler csvHandler;
+
+    @BeforeAll
+    static void initAll() throws IOException {
+        FileWriter writer = new FileWriter(TEST_PATH);
+        writer.write("123;Produto 1;10;5;\n");
+        writer.write("456;Produto 2;20;8;\n");
+        writer.close();
+    }
 
     @BeforeEach
     public void setUp() {
@@ -51,7 +63,6 @@ public class CSVHandlerTest {
         boolean result = csvHandler.gravaRegistro(estoque, nomeArquivo);
 
         assertTrue(result);
-        deleteTestCsvFile(nomeArquivo);
     }
 
     @Test
@@ -82,9 +93,9 @@ public class CSVHandlerTest {
         assertNull(csv);
     }
 
-    private void deleteTestCsvFile(String filename) {
-        String path = dirResources + filename + ".csv";
-        File file = new File(path);
+    @AfterAll
+    static void tearDownAll(){
+        File file = new File(TEST_PATH);
         file.delete();
     }
 }
