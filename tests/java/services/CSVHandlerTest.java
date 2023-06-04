@@ -22,6 +22,11 @@ public class CSVHandlerTest {
 
     @BeforeAll
     static void initAll() throws IOException {
+        File file = new File(dirResources);
+        if (!file.exists())
+            if (!file.mkdir())
+                System.out.println("LOG TESTE: erro ao criar diretório 'resources'.");
+
         FileWriter writer = new FileWriter(TEST_PATH);
         writer.write("123;Produto 1;10;5;\n");
         writer.write("456;Produto 2;20;8;\n");
@@ -96,6 +101,7 @@ public class CSVHandlerTest {
     @AfterAll
     static void tearDownAll(){
         File file = new File(TEST_PATH);
-        file.delete();
+        if (!file.delete())
+            System.out.println("LOG TESTE: erro ao apagar arquivo de testes." );
     }
 }

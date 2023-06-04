@@ -2,10 +2,7 @@ package services;
 
 import models.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +64,11 @@ public class CSVHandler {
         String csv = montaCsv(estoque.getProdutos());
         if (csv == null)
             return false;
+
+        File file = new File(dirResources);
+        if (!file.exists())
+            if (!file.mkdir())
+                return false;
 
         String path = dirResources + nomeArquivo + ".csv";
         try (FileWriter writer = new FileWriter(path, StandardCharsets.UTF_8)) {
