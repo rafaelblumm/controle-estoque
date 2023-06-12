@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="controle-estoque:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/controle_estoque_jar</output-path>
+    <root id="archive" name="controle-estoque.jar">
+      <element id="module-output" name="controle-estoque" />
+    </root>
+  </artifact>
+</component>
